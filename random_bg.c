@@ -231,13 +231,13 @@ int main(int argc, char **argv){
 
 			char *new_line = build_str(fst_part,new_image,comments);
 
-			//printf("Build str = %s",new_line);
+			printf("Build str = %s",new_line);
 							
 			//fseek(file, FILE_OFFSET , SEEK_SET);
 							
 			//fwrite(new_line,sizeof(char),strlen(new_line),file);
 
-				fputs(line, tmp_file);
+			fputs(new_line, tmp_file);
 
 			free_images(images,size);
 			free(new_line);

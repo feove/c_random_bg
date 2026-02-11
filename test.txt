@@ -2,7 +2,7 @@
 
 ## Simple-SDDM2
 
-Background="kingdom.png"
+Background="moon.png"
 
 Path relative to the theme root directory. Most standard image file formats are allowed including support for transparency
 
