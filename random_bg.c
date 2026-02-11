@@ -75,6 +75,7 @@ char **get_image_list(const char *dir_path, int *size) {
 	        const char *ext = strrchr(entry->d_name, '.');
 	
 	        if (ext && strcmp(ext, ".png") == 0) {
+
 	            images[i] = strdup(entry->d_name);
 	            i++;
 	        }
@@ -179,6 +180,13 @@ char *random_image(char **images,int mod){
 	return images[i];
 }
 
+FILE *create_tmp_file(char *tmp_file_path){
+	
+	FILE *file = fopen(tmp_file_path, "w+");
+
+	return file;	
+}
+
 
 int main(int argc, char **argv){
 
@@ -189,6 +197,7 @@ int main(int argc, char **argv){
 	
 	(void)argc;
 	
+	FILE *tmp_file = create_tmp_file("test.txt"); // /tmp/tmp.txt
 	 
 	const char *path = argv[1];
 	
@@ -199,39 +208,46 @@ int main(int argc, char **argv){
 	 while (fgets(line, sizeof(line), file)) {
 
 			int line_offset = parser(line);
-	
-	 		if (line_offset != 0){
 
-				//Set cursor to the start of line where is the work
-				FILE_OFFSET -= line_offset - 2;
+			if (line_offset == 0){
+
+				fputs(line, tmp_file);
 				
-				char *fst_part = get_first_pt(line,line_offset);
+				continue;
+			}
 
-				int size = 0;
-				char **images = get_image_list(DIRECTORY_PATH, &size);				
+			//Set cursor to the start of line where is the work
+			FILE_OFFSET -= line_offset - 2;
+			
+			char *fst_part = get_first_pt(line,line_offset);
 
-				char *new_image = random_image(images,size);
-				//print_images(images, size);
-				
-				char *comments = get_comments(line + line_offset);
+			int size = 0;
+			char **images = get_image_list(DIRECTORY_PATH, &size);				
 
-				char *new_line = build_str(fst_part,new_image,comments);
+			char *new_image = random_image(images,size);
+			//print_images(images, size);
+			
+			char *comments = get_comments(line + line_offset);
 
-				printf("Build str = %s",new_line);
-								
-				fseek(file, FILE_OFFSET , SEEK_SET);
-								
-				fwrite(new_line,sizeof(char),strlen(new_line),file);
+			char *new_line = build_str(fst_part,new_image,comments);
 
-				free_images(images,size);
-				free(new_line);
-				
-	 			break;
-	 		};
+			//printf("Build str = %s",new_line);
+							
+			//fseek(file, FILE_OFFSET , SEEK_SET);
+							
+			//fwrite(new_line,sizeof(char),strlen(new_line),file);
+
+				fputs(line, tmp_file);
+
+			free_images(images,size);
+			free(new_line);
+	 	
 	      //printf("%s", line); 
 	  }
 
 	fclose(file);
+	fclose(tmp_file);
+	
 	
 	return 0;
 }
